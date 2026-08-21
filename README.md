@@ -8,7 +8,7 @@ ERC-20 / 721 / 1155 token systems, royalties (ERC-2981), upgradeable contracts
 Merkle-proof airdrops, sybil/replay protection, relayers (gasless UX)
 SIWE auth, wallet integrations (MetaMask, WalletConnect)
 High-throughput infra: Redis, PostgreSQL, RPC failover, event indexers
-IPFS storage, security tooling (Slither), gas optimization
+IPFS storage, sec-/-urity tooling (Slither), gas optimization
 🛠️ Stack
 Solidity · Hardhat · OpenZeppelin · ethers.js v6 · Node 22 · Docker · WSL2
 ▶️ Quick start
