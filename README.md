@@ -65,3 +65,10 @@ scripts/     Deploy & task scripts
 - Tests: mint OK + attacker blocked (onlyOwner)
 - Learned: msg.sender, _safeMint vs _mint, BigInt (ethers v6),
   EVM Cancun/mcopy, Docker volumes & build caches
+
+### Day 2 — ERC-1155 batch minting
+- Single contract managing multiple token types (EARLY_ADOPTER=0, VIP=1)
+- mintBatch: multiple token IDs to one wallet in 1 tx
+- airdrop(): same token to many wallets in 1 tx (gas-efficient)
+- Learned: balanceOf(account, id) vs ERC-721 balanceOf(account),
+  _mintBatch vs loop _mint, and why batch = ~90% less gas
