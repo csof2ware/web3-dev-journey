@@ -25,6 +25,8 @@
     "fast-equals": "^5.4.1",
     "is-safe-filename": "^0.1.1",
     "json-stream-stringify": "^3.1.7",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.6.0",
     "micro-eth-signer": "^0.14.0",
     "micro-packed": "^0.7.3",
     "p-map": "^7.0.6",
