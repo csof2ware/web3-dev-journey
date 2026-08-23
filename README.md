@@ -72,3 +72,9 @@ scripts/     Deploy & task scripts
 - airdrop(): same token to many wallets in 1 tx (gas-efficient)
 - Learned: balanceOf(account, id) vs ERC-721 balanceOf(account),
   _mintBatch vs loop _mint, and why batch = ~90% less gas
+
+### Day 3 — Merkle proofs
+- Off-chain tree (merkletreejs), on-chain only the 32-byte root
+- claim(proof) with OZ MerkleProof; hasClaimed blocks double claims
+- Learned: leaf = keccak256(abi.encodePacked(addr)), sortPairs:true,
+  ethers v6 hash-fn signature pitfall (TypeError .length)
