@@ -83,3 +83,6 @@ scripts/     Deploy & task scripts
 * EIP-712 signed claims: per-user nonce + deadline + chainId domain separator
 * Learned: Sybil = fake identities; replay = reused proofs/signatures;
   domain separator kills cross-chain replay
+
+## 🌐 Deployed Contracts
+- *Polygon Amoy:* [0x8787f93A5CfdAF3e03570619b20A73Ad6A571194](https://amoy.polygonscan.com/address/0x8787f93A5CfdAF3e03570619b20A73Ad6A571194)
