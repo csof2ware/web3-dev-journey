@@ -78,6 +78,7 @@ scripts/     Deploy & task scripts
 - claim(proof) with OZ MerkleProof; hasClaimed blocks double claims
 - Learned: leaf = keccak256(abi.encodePacked(addr)), sortPairs:true,
   ethers v6 hash-fn signature pitfall (TypeError .length)
+  
 ### Day 4 — Sybil & replay protection
 * Defense in depth: Merkle + hasClaimed + no-contract check + ERC-20 gate
 * EIP-712 signed claims: per-user nonce + deadline + chainId domain separator
