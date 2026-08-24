@@ -85,5 +85,20 @@ scripts/     Deploy & task scripts
 * Learned: Sybil = fake identities; replay = reused proofs/signatures;
   domain separator kills cross-chain replay
 
+### Day 5 — Multi-chain deployment
+- hardhat.config with sepolia / amoy / baseSepolia (chainId + RPC + accounts)
+- Secrets via dotenv (.env gitignored) — never commit keys
+- First real testnet deploy with explorer links
+- Learned: same bytecode on many chains; chainId kills cross-chain replay;
+  public RPCs are rate-limited → failover needed (Week 2)
+
 ## 🌐 Deployed Contracts
 - *Polygon Amoy:* [0x8787f93A5CfdAF3e03570619b20A73Ad6A571194](https://amoy.polygonscan.com/address/0x8787f93A5CfdAF3e03570619b20A73Ad6A571194)
+
+### Day 6 — Relayers & gasless claims
+- ERC2771Context: contract accepts meta-transactions from trusted forwarder
+- _msgSender() returns the REAL user (not the relayer)
+- User signs off-chain, relayer pays gas → zero-friction UX
+- Learned: Biconomy/Account Abstraction (ERC-4337) vs traditional meta-tx (ERC-2771)
+
+
