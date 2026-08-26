@@ -6,3 +6,8 @@ services:
       - /app/node_modules
     ports:
       - "8545:8545"
+      - "3000:3000"
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
