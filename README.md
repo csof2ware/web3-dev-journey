@@ -102,3 +102,9 @@ scripts/     Deploy & task scripts
 - Learned: Biconomy/Account Abstraction (ERC-4337) vs traditional meta-tx (ERC-2771)
 
 
+
+### Day 8 — RPC failover + event indexer
+- Failover: health-checks the RPC list in parallel, picks lowest latency, auto-switches on failure
+- Indexer: queryFilter(TransferSingle) for history + contract.on() for live updates
+- holders.json rebuilt purely from chain events
+- Learned: never trust a single RPC; the chain is the database, everything else is a cache
