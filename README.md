@@ -108,3 +108,9 @@ scripts/     Deploy & task scripts
 - Indexer: queryFilter(TransferSingle) for history + contract.on() for live updates
 - holders.json rebuilt purely from chain events
 - Learned: never trust a single RPC; the chain is the database, everything else is a cache
+
+### Day 9 — PostgreSQL + holders API
+- Postgres in compose; events + holders tables with UPSERT (ON CONFLICT)
+- Indexer resumes from last indexed block (incremental, not full re-scan)
+- API endpoints: /holders, /holders/:address, /stats (pure SQL behind REST)
+- Learned: BIGINT comes as string in node-postgres; chain = source of truth, DB = read model

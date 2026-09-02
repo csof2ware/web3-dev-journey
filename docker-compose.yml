@@ -11,3 +11,11 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: airdrop
+      POSTGRES_PASSWORD: airdrop
+      POSTGRES_DB: airdrop
+    ports:
+      - "5432:5432"

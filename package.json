@@ -38,6 +38,7 @@
     "micro-eth-signer": "^0.14.0",
     "micro-packed": "^0.7.3",
     "p-map": "^7.0.6",
+    "pg": "^8.23.0",
     "readdirp": "^5.1.1",
     "resolve.exports": "^2.0.3",
     "rfdc": "^1.4.1",

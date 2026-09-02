@@ -2,6 +2,7 @@ const express = require("express");
 const Redis = require("ioredis");
 const { ethers } = require("ethers");
 const fs = require("fs");
+const db = require("./db");
 
 const cfg = JSON.parse(fs.readFileSync("backend/config.json"));
 const redis = new Redis("redis://redis:6379");
@@ -10,7 +11,6 @@ app.use(express.json());
 
 function leafOf(a) { return ethers.keccak256(a); }
 
-// Réplica EXATA do MerkleProof.verify do OpenZeppelin (sortPairs)
 function verifyProof(proof, leaf, root) {
   let computed = leaf;
   for (let i = 0; i < proof.length; i++) {
@@ -31,11 +31,9 @@ app.post("/claim", async function (req, res) {
   if (await redis.exists("rl:" + address)) {
     return res.status(429).json({ error: "rate limited" });
   }
-
   if (await redis.sismember("claimed", address)) {
     return res.status(409).json({ error: "already claimed" });
   }
-
   const ok = verifyProof(proof, leafOf(address), cfg.root);
   if (!ok) {
     return res.status(403).json({ error: "not eligible" });
@@ -44,13 +42,25 @@ app.post("/claim", async function (req, res) {
   await redis.rpush("claims", address);
   await redis.sadd("claimed", address);
   await redis.set("rl:" + address, 1, "EX", 10);
-
   res.json({ status: "queued" });
 });
 
-app.get("/queue", async function (req, res) {
-  const len = await redis.llen("claims");
-  res.json({ queueLength: len });
+app.get("/holders", async function (req, res) {
+  try {
+    res.json(await db.getHolders(100));
+  } catch (e) {
+    res.status(500).json({ error: "banco indisponivel" });
+  }
+});
+
+app.get("/holders/:address", async function (req, res) {
+  const h = await db.getHolder(req.params.address);
+  if (!h) return res.status(404).json({ error: "holder nao encontrado" });
+  res.json(h);
+});
+
+app.get("/stats", async function (req, res) {
+  res.json(await db.getStats());
 });
 
 app.listen(3000, function () {
