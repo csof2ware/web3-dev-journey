@@ -114,3 +114,10 @@ scripts/     Deploy & task scripts
 - Indexer resumes from last indexed block (incremental, not full re-scan)
 - API endpoints: /holders, /holders/:address, /stats (pure SQL behind REST)
 - Learned: BIGINT comes as string in node-postgres; chain = source of truth, DB = read model
+
+### Day 10 — IPFS + NFT metadata
+- Own kubo (IPFS) node in docker-compose (API 5001, gateway 8080)
+- Upload via /api/v0/add with FormData/Blob; wrap-with-directory for {id}.json template
+- SVG badges generated in code and pinned; setURI onlyOwner writes the template on-chain
+- Learned: chain stores only the pointer (ipfs://CID/{id}.json); content lives in IPFS;
+  {id} substitution is a client convention (OpenSea), not on-chain logic

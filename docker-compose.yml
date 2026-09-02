@@ -19,3 +19,9 @@ services:
       POSTGRES_DB: airdrop
     ports:
       - "5432:5432"
+  ipfs:
+    image: ipfs/kubo:latest
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
