@@ -121,3 +121,9 @@ scripts/     Deploy & task scripts
 - SVG badges generated in code and pinned; setURI onlyOwner writes the template on-chain
 - Learned: chain stores only the pointer (ipfs://CID/{id}.json); content lives in IPFS;
   {id} substitution is a client convention (OpenSea), not on-chain logic
+
+### Day 11 — Claim frontend with MetaMask
+- Express serves the dApp (express.static) + GET /proof/:address + GET /config
+- BrowserProvider + MetaMask on Hardhat Local (31337); user signs claim(proof) directly
+- EXTRA env injects the dev wallet into the Merkle allowlist + funds it with 1 ETH
+- Learned: dApp = static files + RPC in the browser; backend only serves proofs/config
