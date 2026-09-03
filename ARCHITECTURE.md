@@ -26,6 +26,73 @@ These same primitives, applied to condo votes (CondoDAO), produce *verifiable ba
 
 ## 2. High-Level Architecture
 
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          USERS (browser)                                |
+|                                                                                    
+│                         MetaMask + HTML/JS                              │
+└───────────────────────────────┬─────────────────────────────────────────┘
+│ POST /claim · GET /voucher/:addr
+▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          API LAYER (Express)                            │
+│  rate limit (sliding window) → dedup (set) → verify proof → enqueue     │
+└──────────────┬──────────────────────────────────────┬───────────────────┘
+│                                      │
+▼                                      ▼
+┌─────────────┐                      ┌────────────────┐
+│    Redis    │                      │  PostgreSQL    │
+│  claims:q   │                      │  events/holders│
+│  claimed:s  │                      │                │
+│  rl:*:zset  │                      └───────┬────────┘
+└──────┬──────┘                              │
+│ BLPOP                               │ write
+▼                                      │
+┌─────────────┐                               │
+│   Worker    │ ──────── batch(50) ─────────┐ │
+└─────────────┘                             ▼ ▼
+┌────────────────┐
+│   Hardhat /    │
+│   L1 chain     │
+│  (AirdropToken │
+│   MerkleAirdrop│
+│   SignedAirdrop│
+│   GaslessAirdrop│
+│   ZKAirdrop)   │
+└───────┬────────┘
+│ events
+▼
+┌────────────────┐
+│    Indexer     │
+│ (event-driven) │
+└───────┬────────┘
+│
+▼
+┌────────────────┐
+│  Read model    │
+│  (Postgres)    │
+└────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                   OBSERVABILITY                                         │
+│   /health (liveness) · /metrics (Prometheus text) · Grafana dashboards  │
+└─────────────────────────────────────────────────────────────────────────┘
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 3. Component Specifications
 
 ### 3.1 Smart Contracts
@@ -90,6 +157,21 @@ Two modes:
 
 ## 4. Data Flow — Claim Lifecycle
 
+1.User submits POST /claim { address, proof }
+2.API:
+rate limit check (sliding window ZSET, 5 req/10s)
+dedup check (Redis set "claimed")
+off-chain Merkle verify (mirror of on-chain algorithm)
+RPUSH to "claims" list + SADD "claimed"
+respond 202 Queued (< 50ms)
+3.Worker BLPOP pops from queue
+4.Worker batches up to 50 addresses
+5.Worker calls MerkleAirdrop.claimBatch(addresses[]) — 1 tx
+6.Chain emits N TransferSingle events
+7.Indexer detects events, writes to Postgres (events + holders UPSERT)
+8./stats and /holders reflect the change
+
+*Latency breakdown*: API response <50ms; tx confirmation 2-3 blocks (~30s on mainnet, ~2s on testnets); dashboard refresh ~5s.
 
 ## 5. Architectural Decision Records (ADRs)
 
@@ -166,6 +248,12 @@ Returns 200 + {"healthy": true} only if all three pass. Returns 503 otherwise. K
 
 ### 7.2 Metrics (Prometheus text format)
 
+airdrop_requests_total 
+airdrop_claims_queued 
+airdrop_claims_dup 
+airdrop_claims_invalid 
+airdrop_claims_rate_limited 
+airdrop_queue_length
 
 Scraped every 15s by Prometheus; visualized in Grafana dashboards.
 
