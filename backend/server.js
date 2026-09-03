@@ -3,12 +3,19 @@ const Redis = require("ioredis");
 const { ethers } = require("ethers");
 const fs = require("fs");
 const db = require("./db");
+const metrics = require("./metrics");
+const rl = require("./ratelimit");
 
 const cfg = JSON.parse(fs.readFileSync("backend/config.json"));
 const redis = new Redis("redis://redis:6379");
 const app = express();
 app.use(express.json());
 app.use(express.static("frontend"));
+
+app.use(function (req, res, next) {
+  metrics.inc("requests_total");
+  next();
+});
 
 function leafOf(a) { return ethers.keccak256(a); }
 
@@ -40,20 +47,27 @@ app.post("/claim", async function (req, res) {
   const address = req.body.address;
   const proof = req.body.proof;
 
-  if (await redis.exists("rl:" + address)) {
+  // Sliding window: máx 5 requests por 10s por endereço
+  const okRl = await rl.allow(redis, address, 5, 10000);
+  if (!okRl) {
+    metrics.inc("claims_rate_limited");
     return res.status(429).json({ error: "rate limited" });
   }
+
   if (await redis.sismember("claimed", address)) {
+    metrics.inc("claims_dup");
     return res.status(409).json({ error: "already claimed" });
   }
+
   const ok = verifyProof(proof, leafOf(address), cfg.root);
   if (!ok) {
+    metrics.inc("claims_invalid");
     return res.status(403).json({ error: "not eligible" });
   }
 
   await redis.rpush("claims", address);
   await redis.sadd("claimed", address);
-  await redis.set("rl:" + address, 1, "EX", 10);
+  metrics.inc("claims_queued");
   res.json({ status: "queued" });
 });
 
@@ -76,6 +90,27 @@ app.get("/stats", async function (req, res) {
   res.json(await db.getStats());
 });
 
+// Healthcheck: orquestrador decide se reinicia o container
+app.get("/health", async function (req, res) {
+  const checks = {};
+  try { await redis.ping(); checks.redis = "ok"; } catch (e) { checks.redis = "down"; }
+  try { await db.getStats(); checks.postgres = "ok"; } catch (e) { checks.postgres = "down"; }
+  try {
+    const p = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
+    await p.getBlockNumber();
+    checks.rpc = "ok";
+  } catch (e) { checks.rpc = "down"; }
+  const healthy = checks.redis === "ok" && checks.postgres === "ok" && checks.rpc === "ok";
+  res.status(healthy ? 200 : 503).json({ healthy: healthy, checks: checks });
+});
+
+// Métricas estilo Prometheus (sem dependências)
+app.get("/metrics", async function (req, res) {
+  const queue = await redis.llen("claims");
+  res.set("Content-Type", "text/plain");
+  res.send(metrics.render() + "\nairdrop_queue_length " + queue + "\n");
+});
+
 app.listen(3000, function () {
-  console.log("API + frontend no ar: http://localhost:3000");
+  console.log("API v4 no ar: http://localhost:3000");
 });

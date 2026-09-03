@@ -1,5 +1,6 @@
 const { ethers } = require("ethers");
 const fs = require("fs");
+const db = require("./db");
 
 const cfg = JSON.parse(fs.readFileSync("backend/config.json"));
 const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
@@ -8,32 +9,22 @@ const abi = [
 ];
 const token = new ethers.Contract(cfg.address, abi, provider);
 
-const DB_FILE = "backend/holders.json";
-let db = {};
-if (fs.existsSync(DB_FILE)) db = JSON.parse(fs.readFileSync(DB_FILE));
+async function main() {
+  await db.initSchema();
 
-function save() {
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
-}
-
-async function indexPast() {
+  const last = await db.lastIndexedBlock();
   const latest = await provider.getBlockNumber();
-  const events = await token.queryFilter("TransferSingle", 0, latest);
+  const events = await token.queryFilter("TransferSingle", last + 1, latest);
   for (const ev of events) {
-    const to = ev.args.to;
-    db[to] = (db[to] || 0) + Number(ev.args.value);
+    await db.ingestEvent(ev.transactionHash, ev.blockNumber, ev.args.to, Number(ev.args.value));
   }
-  save();
-  console.log("Eventos passados: " + events.length + " | holders: " + Object.keys(db).length);
-}
+  const stats = await db.getStats();
+  console.log("Indexados " + events.length + " eventos novos | " + stats.holders + " holders no Postgres");
 
-async function live() {
-  token.on("TransferSingle", function (operator, from, to, id, value) {
-    db[to] = (db[to] || 0) + Number(value);
-    save();
-    console.log("+ holder " + to.slice(0, 10) + "... | total: " + Object.keys(db).length);
+  token.on("TransferSingle", async function (operator, from, to, id, value, ev) {
+    await db.ingestEvent(ev.transactionHash, ev.blockNumber, to, Number(value));
+    console.log("+ holder no Postgres: " + to.slice(0, 10) + "...");
   });
-  console.log("Indexer AO VIVO escutando TransferSingle...");
+  console.log("Indexer PG ao vivo...");
 }
-
-indexPast().then(live);
+main().catch(function (e) { console.error(e); process.exit(1); });
