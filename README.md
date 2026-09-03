@@ -127,3 +127,10 @@ scripts/     Deploy & task scripts
 - BrowserProvider + MetaMask on Hardhat Local (31337); user signs claim(proof) directly
 - EXTRA env injects the dev wallet into the Merkle allowlist + funds it with 1 ETH
 - Learned: dApp = static files + RPC in the browser; backend only serves proofs/config
+
+### Day 15 — EIP-712 signed vouchers
+- SignedAirdrop: authority signs typed data off-chain; contract verifies ECDSA.recover
+- Nonce registry kills replay; wrong-authority signatures revert
+- API issues vouchers (GET /voucher/:address) with sliding-window rate limit
+- Learned: authorization off-chain (free), settlement on-chain (paid); same pattern as
+  Uniswap permit / Optimism airdrop. Revisit pending: The Graph (graph-node setup)
