@@ -33,7 +33,7 @@ function verifyProof(proof, leaf, root) {
 }
 
 app.get("/config", function (req, res) {
-  res.json({ airdropAddress: cfg.airdropAddress, root: cfg.root });
+  res.json({ airdropAddress: cfg.airdropAddress, root: cfg.root, signedAddress: signedCfg.address });
 });
 
 app.get("/proof/:address", function (req, res) {
