@@ -1,3 +1,77 @@
+# 🌐 PORTFÓLIO WEB3 — Guia Completo de Conhecimento
+### De fundamentos a produção: 22 dias construindo uma plataforma de airdrop end-to-end
+Autor: csof2ware · Versão 1.0 · Setembro 2026
+
+---
+
+## PARTE I — POR QUE BLOCKCHAIN
+
+### 1. Blockchain como instrumento de eficácia democrática
+
+Blockchain não é "tecnologia de criptomoeda". É *infraestrutura de coordenação humana*: um livro-razão que ninguém controla sozinho, onde acordos viram código e histórico não pode ser reescrito.
+
+O que isso habilita, em termos concretos:
+
+- *Transparência auditável*: qualquer participante verifica o histórico inteiro. Não existe "confie em mim".
+- *Coordenação sem intermediário*: regras executadas por código, não por vontade de quem está no cargo.
+- *Saída como direito (fork)*: discordou do rumo? Leve o código e a comunidade embora. Poder descentralizado de verdade.
+- *Voto verificável sem autoridade central*: cédulas assinadas, contagem pública, resultado impossível de manipular.
+- *Bens públicos financiáveis*: quadratic funding e tesourarias on-chain para o que o mercado ignora.
+
+Isso não é teoria de whitepaper. É o que este portfólio implementa em miniatura: provas Merkle (elegibilidade verificável), nonces (anti-fraude), assinaturas tipadas (autorização sem confiança), eventos públicos (prestação de contas).
+
+### 2. Contexto pessoal — o caso CondoDAO
+
+Este projeto nasce de um problema real e pequeno, do tamanho exato em que blockchain brilha:
+
+> Em um condomínio novo, desde a entrega das chaves não existe participação dos moradores em decisões-chave. O síndico não publica nada, não há conselho atuante, e a ausência de mecanismos de transparência abre espaço para má gestão e atraso em projetos de bem comum.
+
+Uma "pequena sociedade" (moradores + prestadores) com os mesmos problemas de qualquer governança: *opacidade, concentração e ausência de prestação de contas*.
+
+O que os primitivos deste projeto resolvem diretamente nesse cenário:
+
+| Problema do condomínio | Primitivo aprendido aqui |
+|---|---|
+| Voto manipulável / sem prova | Assinaturas EIP-712 + nullifiers (Dias 15/17) |
+| Elegibilidade de moradores | Merkle allowlist (Dia 3) |
+| Prestação de contas | Eventos on-chain + indexer + dashboard (Dias 8-13, 22) |
+| Tesouraria opaca | Read model público + health/metrics (Dias 9/13) |
+| Decisões sem quórum verificável | Contadores e registros imutáveis (Dia 13) |
+
+O projeto CondoDAO (documento próprio em elaboração) aplicará exatamente esta pilha. Este portfólio é a fundação técnica dele.
+
+### 3. Governança e DAOs — o que realmente são
+
+DAO não é anarquia; é *democracia programável: propostas, quórum, delegação, timelock e tesouraria visível. Compound Governor, Snapshot, Safe multisig — ferramentas maduras. O erro comum é achar que DAO é "empresa sem dono". DAO é **organização cujas regras executam sozinhas e mudam só por voto*.
+
+Conceitos que este documento cobre: votação on-chain vs off-chain, delegação, quadratic voting, proof-of-personhood, timelock como proteção, e fork como direito de saída.
+
+### 4. Roadmap executado (22 dias)
+
+| Dia | Tema | Conceito-chave |
+|---|---|---|
+| 1 | Setup | Docker + WSL + Hardhat + OpenZeppelin |
+| 2 | ERC-1155 | Multi-token gas-eficiente |
+| 3 | Merkle proofs | 1 tx = N claims |
+| 4 | Testes | Chai/Mocha, 17 testes |
+| 5 | Frontend inicial | ethers.js no browser |
+| 6 | IPFS básico | Storage content-addressed |
+| 7 | Backend high-throughput | Redis queues + worker batching |
+| 8 | RPC failover + indexer | Chain = fonte da verdade |
+| 9 | PostgreSQL | Read model SQL + UPSERT |
+| 10 | IPFS metadata | NFTs com nome/imagem + setURI |
+| 11 | MetaMask | dApp de claim (rede 31337) |
+| 12 | CI/CD | GitHub Actions + Dockerfile prod |
+| 13 | Rate limit + monitoring | Sliding window, /health, /metrics |
+| 14 | The Graph | Subgraph GraphQL (pendente: setup) |
+| 15 | EIP-712 | Vouchers assinados off-chain |
+| 16 | Account Abstraction | Relayer gasless (stub a endurecer) |
+| 17 | ZK proofs | Nullifiers e privacidade (stub) |
+| 18 | Auditoria | Solhint + fuzz (Slither = Python) |
+| 19 | Testnet | Amoy + verificação + burner key |
+| 20 | Observabilidade | Prometheus + Grafana |
+| 21 | Docs | ARCHITECTURE.md com ADRs |
+| 22 | Dashboard | Frontend completo (todos os endpoints) |
 
 ---
 
